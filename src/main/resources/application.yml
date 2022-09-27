@@ -1,0 +1,25 @@
+spring:
+  data:
+    mongodb:
+      database: testMDB
+      username: mongo
+      password: mongo
+      uri: mongodb://mongo:mongo@localhost:27017/testMDB
+
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+  sql:
+    init:
+      platform: postgres
+
+  datasource:
+      url: jdbc:postgresql://localhost:5432/testPG
+      username: postgres
+      password: postgres
+      driverClassName: org.postgresql.Driver
+
+
+
