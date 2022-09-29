@@ -1,9 +1,17 @@
 package home.sweethome.fussdb.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sun.istack.NotNull;
+import home.sweethome.fussdb.util.Role;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -17,10 +25,18 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-
-    private String username;
+    @Size(min = 1, max = 25)
+    private String firstname;
+    @Size(min = 1, max = 25)
+    private String lastname;
+    @Size(min = 1, max = 8)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+    @Email
     private String email;
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<Role> roles;
 
     @Override
     public boolean equals(Object o) {
