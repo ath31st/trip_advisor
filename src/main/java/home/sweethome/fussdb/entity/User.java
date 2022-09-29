@@ -29,7 +29,7 @@ public class User {
     private String firstname;
     @Size(min = 1, max = 25)
     private String lastname;
-    @Size(min = 1, max = 8)
+    @Size(min = 6)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     @Email
