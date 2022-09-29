@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/user/**").hasRole("USER")
+                .antMatchers("/api/user/delete").hasRole("ADMINISTRATOR")
                 .and()
              //   .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
              //   .and()
