@@ -36,6 +36,7 @@ public class User {
     @Email
     private String email;
     private LocalDateTime registerDate;
+    private boolean isLocked;
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Role> roles;

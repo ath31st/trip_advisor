@@ -1,6 +1,9 @@
 server:
   port: 28853
 
+fussdb:
+  yandexapikey:
+
 spring:
   data:
     mongodb:
@@ -19,10 +22,10 @@ spring:
       platform: postgres
 
   datasource:
-      url: jdbc:postgresql://localhost:5432/testPG
-      username: postgres
-      password: postgres
-      driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/testPG
+    username: postgres
+    password: postgres
+    driverClassName: org.postgresql.Driver
 
 
 

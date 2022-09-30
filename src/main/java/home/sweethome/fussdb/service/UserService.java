@@ -33,6 +33,7 @@ public class UserService implements UserDetailsService {
         checkExistingUser(user);
 
         String encodedPass = passwordEncoder.encode(user.getPassword());
+        user.setEmail(user.getEmail().toLowerCase());
         user.setPassword(encodedPass);
         user.setRoles(Collections.singletonList(ROLE_USER));
         user.setRegisterDate(LocalDateTime.now());
