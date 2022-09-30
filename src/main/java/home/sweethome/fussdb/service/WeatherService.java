@@ -1,23 +1,25 @@
 package home.sweethome.fussdb.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import home.sweethome.fussdb.entity.Weather;
 import home.sweethome.fussdb.repository.WeatherRepository;
-import org.springframework.beans.factory.annotation.Value;
+import home.sweethome.fussdb.util.Location;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+
+import static home.sweethome.fussdb.util.ConnectionUtil.getConnection;
+import static home.sweethome.fussdb.util.ConnectionUtil.getRawDataFromConnection;
 
 @Service
 public class WeatherService {
     private final WeatherRepository weatherRepository;
-
-    @Value("${fussdb.yandexapikey}")
-    private String yandexApiKey;
     private static final String GET_FORECAST_BY_GEOCODE = "https://www.7timer.info/bin/api.pl?product=civillight&output=json&lon=%s&lat=%s";
     private final static String USER_AGENT = "Mozilla/5.0";
 
@@ -25,41 +27,36 @@ public class WeatherService {
         this.weatherRepository = weatherRepository;
     }
 
-    public List<Weather> getForecast(float lon, float lat) throws IOException {
-        String forecastUrl = String.format(GET_FORECAST_BY_GEOCODE, lon, lat);
+    public List<Weather> getForecast(Location location) throws IOException {
+        String forecastUrl = String.format(GET_FORECAST_BY_GEOCODE, location.getLatitude(), location.getLongitude());
         List<Weather> list;
 
         URL url = new URL(forecastUrl);
-        HttpURLConnection connection = getConnection(url);
+        HttpURLConnection connection = getConnection(url, USER_AGENT);
         String rawJson = getRawDataFromConnection(connection);
 
-        list = null;
+        list = convertRawJsonToListWeather(rawJson);
 
         connection.disconnect();
         return list;
     }
 
-    private HttpURLConnection getConnection(URL url) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("User-Agent", USER_AGENT);
-        connection.setConnectTimeout(5000);
-        connection.setReadTimeout(5000);
-        connection.setRequestMethod("GET");
-        int responseCode = connection.getResponseCode();
-        if (responseCode == 404 | responseCode == 500) {
-            throw new IllegalArgumentException();
+    private static List<Weather> convertRawJsonToListWeather(String rawJson) throws JsonProcessingException {
+        List<Weather> weatherList = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+
+        JsonNode arrNode = new ObjectMapper()
+                .readTree(rawJson)
+                .get("dataseries");
+        if (arrNode.isArray()) {
+            for (JsonNode objNode : arrNode) {
+                Weather weather = mapper.convertValue(objNode, Weather.class);
+                weather.setMaxTemp(objNode.findPath("temp2m").get("max").asInt());
+                weather.setMinTemp(objNode.findPath("temp2m").get("min").asInt());
+                weatherList.add(weather);
+            }
         }
-        return connection;
+        return weatherList;
     }
-    private String getRawDataFromConnection(HttpURLConnection connection) throws IOException {
-        StringBuilder response = new StringBuilder();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String inputLine;
-        while ((inputLine = bufferedReader.readLine()) != null) {
-            response.append(inputLine);
-        }
-        bufferedReader.close();
-        return response.toString();
-    }
+
 }

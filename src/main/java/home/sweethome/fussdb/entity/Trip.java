@@ -1,6 +1,7 @@
 package home.sweethome.fussdb.entity;
 
 
+import home.sweethome.fussdb.util.Location;
 import lombok.Data;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 public class Trip {
     private User user;
     private int duration;
-    private String startRoutePoint;
-    private String endRoutePoint;
+    private Location startRoutePoint;
+    private Location endRoutePoint;
     private List<Weather> weather;
 }
