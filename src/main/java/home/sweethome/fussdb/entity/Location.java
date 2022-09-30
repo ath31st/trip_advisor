@@ -1,45 +1,37 @@
 package home.sweethome.fussdb.entity;
 
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Objects;
 
-@Entity
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class Trip {
+@Entity
+public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-    private int duration;
-    @OneToOne
-    private User user;
-    @OneToOne
-    private Route route;
-    @OneToMany(fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private List<Weather> weather;
+
+    private String name;
+    private float latitude;
+    private float longitude;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Trip trip = (Trip) o;
-        return id != null && Objects.equals(id, trip.id);
+        Location location = (Location) o;
+        return id != null && Objects.equals(id, location.id);
     }
 
     @Override
     public int hashCode() {
         return getClass().hashCode();
     }
+
 }

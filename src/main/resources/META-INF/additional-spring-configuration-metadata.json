@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "fussdb.yandexapikey",
+      "type": "java.lang.String",
+      "description": "Description for fussdb.yandexapikey."
+  }
+] }

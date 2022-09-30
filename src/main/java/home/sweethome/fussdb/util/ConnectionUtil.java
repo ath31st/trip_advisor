@@ -11,6 +11,7 @@ public class ConnectionUtil {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("User-Agent", userAgent);
+        connection.setRequestProperty("Accept-Encoding", "deflate, br");
         connection.setConnectTimeout(5000);
         connection.setReadTimeout(5000);
         connection.setRequestMethod("GET");

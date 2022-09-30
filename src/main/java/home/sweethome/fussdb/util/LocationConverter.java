@@ -3,6 +3,7 @@ package home.sweethome.fussdb.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import home.sweethome.fussdb.entity.Location;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
@@ -13,7 +14,6 @@ import static home.sweethome.fussdb.util.ConnectionUtil.getConnection;
 import static home.sweethome.fussdb.util.ConnectionUtil.getRawDataFromConnection;
 
 public class LocationConverter {
-
     @Value("${fussdb.yandexapikey}")
     private static String yandexApiKey;
     private static final String GET_GEOCODE_BY_ADDRESS = "https://geocode-maps.yandex.ru/1.x/?apikey=%s&results=1&format=json&geocode=%s";
@@ -25,6 +25,9 @@ public class LocationConverter {
         URL url = new URL(locationUrl);
         HttpURLConnection connection = getConnection(url, USER_AGENT);
         String rawJson = getRawDataFromConnection(connection);
+
+        connection.disconnect();
+
         return convertRawJsonToLocation(rawJson);
     }
 
@@ -39,8 +42,9 @@ public class LocationConverter {
                 .path("response")
                 .path("GeoObjectCollection")
                 .get("featureMember");
+
         if (arrNode.isArray()) {
-            JsonNode jsonNode = arrNode.get("GeoObject");
+            JsonNode jsonNode = arrNode.findPath("GeoObject");
 
             latLon = jsonNode.path("Point")
                     .get("pos")
