@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import home.sweethome.fussdb.entity.Location;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -13,13 +14,14 @@ import java.net.URL;
 import static home.sweethome.fussdb.util.ConnectionUtil.getConnection;
 import static home.sweethome.fussdb.util.ConnectionUtil.getRawDataFromConnection;
 
+@Component
 public class LocationConverter {
     @Value("${fussdb.yandexapikey}")
-    private static String yandexApiKey;
+    private String yandexApiKey;
     private static final String GET_GEOCODE_BY_ADDRESS = "https://geocode-maps.yandex.ru/1.x/?apikey=%s&results=1&format=json&geocode=%s";
     private final static String USER_AGENT = "Mozilla/5.0";
 
-    public static Location StringAddressToGeocode(String address) throws IOException {
+    public Location stringAddressToGeocode(String address) throws IOException {
         String locationUrl = String.format(GET_GEOCODE_BY_ADDRESS, yandexApiKey, address);
 
         URL url = new URL(locationUrl);
@@ -54,7 +56,7 @@ public class LocationConverter {
         }
         location.setLatitude(Float.parseFloat(latLon[0]));
         location.setLongitude(Float.parseFloat(latLon[1]));
-        location.setName(name + " " + description);
+        location.setName(name + ", " + description);
 
         return location;
     }

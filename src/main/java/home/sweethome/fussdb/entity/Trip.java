@@ -26,9 +26,6 @@ public class Trip {
     private User user;
     @OneToOne
     private Route route;
-    @OneToMany(fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private List<Weather> weather;
 
     @Override
     public boolean equals(Object o) {

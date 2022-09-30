@@ -8,9 +8,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import static home.sweethome.fussdb.util.Role.ROLE_ADMINISTRATOR;
+import static home.sweethome.fussdb.util.Role.ROLE_USER;
 
 @Configuration
 @EnableWebSecurity
@@ -34,8 +39,9 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests()
                 .antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/user/**").hasRole("USER")
-                .antMatchers("/api/user/delete").hasRole("ADMINISTRATOR")
+                .antMatchers("/api/user/**").hasAuthority(ROLE_USER.name())
+                .antMatchers("/api/trip/**").hasAuthority(ROLE_USER.name())
+                .antMatchers("/api/user/delete").hasAuthority(ROLE_ADMINISTRATOR.name())
                 .and()
              //   .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
              //   .and()
@@ -54,4 +60,5 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
 }

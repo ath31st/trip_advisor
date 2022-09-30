@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -20,7 +21,9 @@ public class Location {
     private String name;
     private float latitude;
     private float longitude;
-
+    @OneToMany(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Weather> weather;
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

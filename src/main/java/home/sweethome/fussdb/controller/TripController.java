@@ -1,21 +1,24 @@
 package home.sweethome.fussdb.controller;
 
-import home.sweethome.fussdb.util.LocationConverter;
+import home.sweethome.fussdb.dto.TripDTO;
+import home.sweethome.fussdb.service.TripService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/trip")
+@RequestMapping("/api/trip")
 public class TripController {
+    private final TripService tripService;
 
-    @GetMapping("/address")
-    public ResponseEntity getLoc(@RequestParam String address) throws IOException {
-       return ResponseEntity.ok().body(LocationConverter.StringAddressToGeocode(address));
+    public TripController(TripService tripService) {
+        this.tripService = tripService;
+    }
+
+    @PostMapping("/new")
+    public ResponseEntity<Map<String,String>> tripHandler(@RequestBody TripDTO tripDTO) {
+        return tripService.newTrip(tripDTO);
     }
 
 }
