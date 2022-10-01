@@ -16,6 +16,8 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
                        HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException {
 
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied!");
+        response.setContentType("application/json");
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.getOutputStream().println("{ \"error\": \"" + accessDeniedException.getMessage() + "\" }");
     }
 }

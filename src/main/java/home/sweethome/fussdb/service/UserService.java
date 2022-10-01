@@ -33,12 +33,13 @@ public class UserService {
         user.setPassword(encodedPass);
         user.setRoles(Collections.singletonList(ROLE_USER));
         user.setRegisterDate(LocalDateTime.now());
-        user = userRepository.save(user);
 
         user.setEnabled(true);
         user.setAccountNonExpired(true);
         user.setAccountNonLocked(true);
         user.setCredentialsNonExpired(true);
+
+        user = userRepository.save(user);
 
         return Collections.singletonMap("success", user);
     }
