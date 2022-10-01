@@ -4,6 +4,10 @@ server:
 fussdb:
   yandexapikey:
 
+jwt:
+  secret: VERY_SECRET_PHRASE_OOOF
+
+
 spring:
   data:
     mongodb:

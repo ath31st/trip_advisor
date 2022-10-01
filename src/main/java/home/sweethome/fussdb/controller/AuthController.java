@@ -1,5 +1,6 @@
 package home.sweethome.fussdb.controller;
 
+import home.sweethome.fussdb.dto.LoginCredentials;
 import home.sweethome.fussdb.entity.User;
 import home.sweethome.fussdb.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Map<String, Object> loginHandler(@RequestBody User user) {
-        return null;
+    public Map<String, Object> loginHandler(@RequestBody LoginCredentials credentials) {
+        return userService.getToken(credentials);
     }
 }

@@ -2,6 +2,7 @@ package home.sweethome.fussdb.config;
 
 import home.sweethome.fussdb.exceptionhandler.RestAccessDeniedHandler;
 import home.sweethome.fussdb.exceptionhandler.RestAuthenticationEntryPoint;
+import home.sweethome.fussdb.util.JWT.JWTFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -9,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static home.sweethome.fussdb.util.Role.ROLE_ADMINISTRATOR;
 import static home.sweethome.fussdb.util.Role.ROLE_USER;
@@ -20,10 +22,13 @@ public class SecurityConfig {
 
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
     private final RestAccessDeniedHandler restAccessDeniedHandler;
-
-    public SecurityConfig(RestAuthenticationEntryPoint restAuthenticationEntryPoint, RestAccessDeniedHandler restAccessDeniedHandler) {
+    private final JWTFilter jwtFilter;
+    public SecurityConfig(RestAuthenticationEntryPoint restAuthenticationEntryPoint,
+                          RestAccessDeniedHandler restAccessDeniedHandler,
+                          JWTFilter jwtFilter) {
         this.restAuthenticationEntryPoint = restAuthenticationEntryPoint;
         this.restAccessDeniedHandler = restAccessDeniedHandler;
+        this.jwtFilter = jwtFilter;
     }
 
     @Bean
@@ -43,6 +48,8 @@ public class SecurityConfig {
                 .httpBasic()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
