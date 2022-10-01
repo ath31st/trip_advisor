@@ -8,7 +8,6 @@ import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -24,7 +23,7 @@ public class Trip {
     private int duration;
     @OneToOne
     private User user;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Route route;
 
     @Override

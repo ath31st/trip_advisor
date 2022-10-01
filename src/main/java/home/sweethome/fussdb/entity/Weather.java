@@ -1,12 +1,13 @@
 package home.sweethome.fussdb.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.Objects;
 
 @Getter
@@ -21,8 +22,8 @@ public class Weather {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @JsonProperty("date")
-    private LocalDate date;
+    @JsonFormat(pattern = "yyyyMMdd")
+    private Date date;
     @JsonProperty("weather")
     private String weather;
     private int maxTemp;

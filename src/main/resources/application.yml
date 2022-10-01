@@ -27,5 +27,9 @@ spring:
     password: postgres
     driverClassName: org.postgresql.Driver
 
-
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
 

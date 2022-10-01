@@ -21,7 +21,7 @@ public class Location {
     private String name;
     private float latitude;
     private float longitude;
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Weather> weather;
     @Override

@@ -2,73 +2,62 @@ package home.sweethome.fussdb.service;
 
 import home.sweethome.fussdb.entity.User;
 import home.sweethome.fussdb.repository.UserRepository;
-import home.sweethome.fussdb.util.Role;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static home.sweethome.fussdb.util.Role.ROLE_USER;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     public Map<String, Object> saveUser(User user) {
         checkExistingUser(user);
 
-        String encodedPass = passwordEncoder.encode(user.getPassword());
-        user.setEmail(user.getEmail().toLowerCase());
+        String encodedPass = bCryptPasswordEncoder.encode(user.getPassword());
+        user.setUsername(user.getUsername().toLowerCase());
         user.setPassword(encodedPass);
         user.setRoles(Collections.singletonList(ROLE_USER));
         user.setRegisterDate(LocalDateTime.now());
         user = userRepository.save(user);
+
+        user.setEnabled(true);
+        user.setAccountNonExpired(true);
+        user.setAccountNonLocked(true);
+        user.setCredentialsNonExpired(true);
+
         return Collections.singletonMap("success", user);
     }
 
-    public ResponseEntity<Map<String, String>> deleteUser(String email) {
-        if (userRepository.findByEmailIgnoreCase(email).isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with email: " + email + " nor found!");
+    public ResponseEntity<Map<String, String>> deleteUser(String username) {
+        if (userRepository.findByUsernameIgnoreCase(username).isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with username: " + username + " nor found!");
 
-        userRepository.delete(userRepository.findByEmailIgnoreCase(email).get());
-        return ResponseEntity.ok().body(Collections.singletonMap("status", "User with email " + email + " successful deleted!"));
+        userRepository.delete(userRepository.findByUsernameIgnoreCase(username).get());
+        return ResponseEntity.ok().body(Collections.singletonMap("status", "User with username " + username + " successful deleted!"));
     }
 
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok().body(userRepository.findAll());
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        if (userRepository.findByEmailIgnoreCase(email).isEmpty())
-            throw new UsernameNotFoundException("Invalid User");
-
-        User user = userRepository.findByEmailIgnoreCase(email).get();
-        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        for (Role role : user.getRoles()) {
-            grantedAuthorities.add(new SimpleGrantedAuthority(role.name()));
-        }
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), grantedAuthorities);
-    }
-
     private void checkExistingUser(User user) {
-        if (userRepository.findByEmailIgnoreCase(user.getEmail()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "User with name: " + user.getEmail() + " already exists!");
+        if (userRepository.findByUsernameIgnoreCase(user.getUsername()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User with name: " + user.getUsername() + " already exists!");
         }
     }
 }
