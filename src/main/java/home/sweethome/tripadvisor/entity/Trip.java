@@ -5,7 +5,6 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,7 +25,7 @@ public class Trip {
     private User user;
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)
     @ToString.Exclude
-    private List<Location> locationList = new ArrayList<>();
+    private List<Location> locationList;
 
     @Override
     public boolean equals(Object o) {

@@ -31,13 +31,13 @@ public class WeatherService {
         HttpURLConnection connection = getConnection(url, USER_AGENT);
         String rawJson = getRawDataFromConnection(connection);
 
-        list = convertRawJsonToListWeather(rawJson);
+        list = convertRawJsonToListWeather(rawJson, location);
 
         connection.disconnect();
         return list;
     }
 
-    private static List<Weather> convertRawJsonToListWeather(String rawJson) throws JsonProcessingException {
+    private static List<Weather> convertRawJsonToListWeather(String rawJson, Location location) throws JsonProcessingException {
         List<Weather> weatherList = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
 
@@ -49,6 +49,7 @@ public class WeatherService {
                 Weather weather = mapper.convertValue(objNode, Weather.class);
                 weather.setMaxTemp(objNode.findPath("temp2m").get("max").asInt());
                 weather.setMinTemp(objNode.findPath("temp2m").get("min").asInt());
+                weather.setLocation(location);
                 weatherList.add(weather);
             }
         }

@@ -23,6 +23,7 @@ public class Location {
     private float longitude;
 
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<Weather> weather;
 
     @ManyToOne

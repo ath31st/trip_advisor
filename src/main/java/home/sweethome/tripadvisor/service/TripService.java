@@ -24,26 +24,12 @@ public class TripService {
     private final UserService userService;
 
     public ResponseEntity<Map<String, String>> newTrip(TripDTO tripDTO) {
-        List<Location> locationList = new LinkedList<>();
-        Location location;
 
-        try {
-            location = locationConverter.stringAddressToGeocode(tripDTO.getFromAddress());
-            location.setWeather(weatherService.getForecast(location));
-            locationList.add(location);
+        Trip trip = new Trip();
 
-            location = locationConverter.stringAddressToGeocode(tripDTO.getToAddress());
-            location.setWeather(weatherService.getForecast(location));
-            locationList.add(location);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Trip trip = Trip.builder()
-                .duration(tripDTO.getDuration())
-                .locationList(locationList)
-                .user(getUser())
-                .build();
+        trip.setLocationList(getLocationList(tripDTO, trip));
+        trip.setDuration(tripDTO.getDuration());
+        trip.setUser(getUser());
 
         tripRepository.save(trip);
 
@@ -54,4 +40,25 @@ public class TripService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userService.getByUsername((String) authentication.getPrincipal());
     }
+
+    private List<Location> getLocationList(TripDTO tripDTO, Trip trip) {
+        List<Location> locationList = new ArrayList<>();
+
+        try {
+            Location locationFrom = locationConverter.stringAddressToGeocode(tripDTO.getFromAddress());
+            locationFrom.setWeather(weatherService.getForecast(locationFrom));
+            locationFrom.setTrip(trip);
+            locationList.add(locationFrom);
+
+            Location locationTo = locationConverter.stringAddressToGeocode(tripDTO.getToAddress());
+            locationTo.setWeather(weatherService.getForecast(locationTo));
+            locationTo.setTrip(trip);
+            locationList.add(locationTo);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return locationList;
+    }
+
 }
