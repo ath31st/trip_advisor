@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import home.sweethome.fussdb.entity.Location;
 import home.sweethome.fussdb.entity.Weather;
 import home.sweethome.fussdb.repository.WeatherRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -18,14 +19,10 @@ import static home.sweethome.fussdb.util.ConnectionUtil.getConnection;
 import static home.sweethome.fussdb.util.ConnectionUtil.getRawDataFromConnection;
 
 @Service
+@RequiredArgsConstructor
 public class WeatherService {
-    private final WeatherRepository weatherRepository;
     private static final String GET_FORECAST_BY_GEOCODE = "https://www.7timer.info/bin/api.pl?product=civillight&output=json&lon=%s&lat=%s";
     private final static String USER_AGENT = "Mozilla/5.0";
-
-    public WeatherService(WeatherRepository weatherRepository) {
-        this.weatherRepository = weatherRepository;
-    }
 
     public List<Weather> getForecast(Location location) throws IOException {
         String forecastUrl = String.format(GET_FORECAST_BY_GEOCODE, location.getLatitude(), location.getLongitude());

@@ -3,6 +3,7 @@ package home.sweethome.fussdb.controller;
 import home.sweethome.fussdb.dto.LoginCredentials;
 import home.sweethome.fussdb.entity.User;
 import home.sweethome.fussdb.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,12 +13,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
-
-    public AuthController(UserService userService) {
-        this.userService = userService;
-    }
 
     @PostMapping("/register")
     public Map<String, Object> registerHandler(@RequestBody User user) {

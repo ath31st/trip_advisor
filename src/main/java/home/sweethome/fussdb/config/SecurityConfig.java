@@ -3,6 +3,7 @@ package home.sweethome.fussdb.config;
 import home.sweethome.fussdb.exceptionhandler.RestAccessDeniedHandler;
 import home.sweethome.fussdb.exceptionhandler.RestAuthenticationEntryPoint;
 import home.sweethome.fussdb.util.JWT.JWTFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -18,18 +19,12 @@ import static home.sweethome.fussdb.util.Role.ROLE_USER;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
     private final RestAccessDeniedHandler restAccessDeniedHandler;
     private final JWTFilter jwtFilter;
-    public SecurityConfig(RestAuthenticationEntryPoint restAuthenticationEntryPoint,
-                          RestAccessDeniedHandler restAccessDeniedHandler,
-                          JWTFilter jwtFilter) {
-        this.restAuthenticationEntryPoint = restAuthenticationEntryPoint;
-        this.restAccessDeniedHandler = restAccessDeniedHandler;
-        this.jwtFilter = jwtFilter;
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {

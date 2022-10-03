@@ -4,6 +4,7 @@ import home.sweethome.fussdb.dto.LoginCredentials;
 import home.sweethome.fussdb.entity.User;
 import home.sweethome.fussdb.repository.UserRepository;
 import home.sweethome.fussdb.util.JWT.JWTUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,21 +23,12 @@ import java.util.Map;
 import static home.sweethome.fussdb.util.Role.ROLE_USER;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JWTUtil jwtUtil;
     private final AuthenticationManager authManager;
-
-    public UserService(UserRepository userRepository,
-                       BCryptPasswordEncoder bCryptPasswordEncoder,
-                       JWTUtil jwtUtil,
-                       AuthenticationManager authManager) {
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.jwtUtil = jwtUtil;
-        this.authManager = authManager;
-    }
 
     public Map<String, Object> saveUser(User user) {
         checkExistingUser(user);
