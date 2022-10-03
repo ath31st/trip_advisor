@@ -22,6 +22,7 @@ public class TripService {
     private final LocationConverter locationConverter;
     private final TripRepository tripRepository;
     private final WeatherService weatherService;
+    private final UserService userService;
 
     public ResponseEntity<Map<String, String>> newTrip(TripDTO tripDTO) {
         List<Location> locationList = new LinkedList<>();
@@ -50,6 +51,6 @@ public class TripService {
 
     private User getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (User) authentication.getPrincipal();
+        return userService.getByUsername((String) authentication.getPrincipal());
     }
 }

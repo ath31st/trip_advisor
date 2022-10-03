@@ -40,8 +40,7 @@ public class SecurityConfig {
                 .antMatchers("/api/user/delete/**").hasAuthority(ROLE_ADMINISTRATOR.name())
                 .anyRequest().authenticated()
                 .and()
-                .httpBasic()
-                .and()
+                .httpBasic().disable() //disable basic auth
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

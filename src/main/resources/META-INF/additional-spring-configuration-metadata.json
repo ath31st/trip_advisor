@@ -1,8 +1,8 @@
 {
   "properties": [
     {
-      "name": "fussdb.yandexapikey",
+      "name": "trip.yandexapikey",
       "type": "java.lang.String",
-      "description": "Description for fussdb.yandexapikey."
+      "description": "Description for trip.yandexapikey."
   }
 ] }

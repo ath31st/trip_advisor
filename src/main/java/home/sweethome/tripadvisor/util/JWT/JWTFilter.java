@@ -2,6 +2,7 @@ package home.sweethome.tripadvisor.util.JWT;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import home.sweethome.tripadvisor.service.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,15 +16,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final JWTUtil jwtUtil;
-
-    public JWTFilter(CustomUserDetailsService customUserDetailsService, JWTUtil jwtUtil) {
-        this.customUserDetailsService = customUserDetailsService;
-        this.jwtUtil = jwtUtil;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
