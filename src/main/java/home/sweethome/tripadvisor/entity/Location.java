@@ -21,9 +21,14 @@ public class Location {
     private String name;
     private float latitude;
     private float longitude;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @ToString.Exclude
+
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
     private List<Weather> weather;
+
+    @ManyToOne
+    @JoinColumn(name = "trip_id")
+    private Trip trip;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,15 +1,16 @@
 package home.sweethome.tripadvisor.entity;
 
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+@Builder
+@AllArgsConstructor
 @Entity
 @Getter
 @Setter
@@ -23,8 +24,9 @@ public class Trip {
     private int duration;
     @OneToOne
     private User user;
-    @OneToOne(cascade = CascadeType.ALL)
-    private Route route;
+    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<Location> locationList = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

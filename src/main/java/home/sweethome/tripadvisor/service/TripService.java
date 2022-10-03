@@ -2,7 +2,6 @@ package home.sweethome.tripadvisor.service;
 
 import home.sweethome.tripadvisor.dto.TripDTO;
 import home.sweethome.tripadvisor.entity.Location;
-import home.sweethome.tripadvisor.entity.Route;
 import home.sweethome.tripadvisor.entity.Trip;
 import home.sweethome.tripadvisor.entity.User;
 import home.sweethome.tripadvisor.repository.TripRepository;
@@ -26,23 +25,25 @@ public class TripService {
 
     public ResponseEntity<Map<String, String>> newTrip(TripDTO tripDTO) {
         List<Location> locationList = new LinkedList<>();
-        Route route = new Route();
+        Location location;
+
         try {
-            Location location = locationConverter.stringAddressToGeocode(tripDTO.getFromAddress());
+            location = locationConverter.stringAddressToGeocode(tripDTO.getFromAddress());
             location.setWeather(weatherService.getForecast(location));
             locationList.add(location);
+
             location = locationConverter.stringAddressToGeocode(tripDTO.getToAddress());
             location.setWeather(weatherService.getForecast(location));
             locationList.add(location);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        route.setLocationList(locationList);
 
-        Trip trip = new Trip();
-        trip.setDuration(tripDTO.getDuration());
-        trip.setUser(getUser());
-        trip.setRoute(route);
+        Trip trip = Trip.builder()
+                .duration(tripDTO.getDuration())
+                .locationList(locationList)
+                .user(getUser())
+                .build();
 
         tripRepository.save(trip);
 
