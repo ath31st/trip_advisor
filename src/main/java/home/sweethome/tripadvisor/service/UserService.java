@@ -1,6 +1,7 @@
 package home.sweethome.tripadvisor.service;
 
 import home.sweethome.tripadvisor.dto.LoginCredentials;
+import home.sweethome.tripadvisor.dto.UserDTO;
 import home.sweethome.tripadvisor.entity.User;
 import home.sweethome.tripadvisor.repository.UserRepository;
 import home.sweethome.tripadvisor.util.JWT.JWTUtil;
@@ -9,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,7 +47,7 @@ public class UserService {
         user.setAccountNonLocked(true);
         user.setCredentialsNonExpired(true);
 
-        user = userRepository.save(user);
+        userRepository.save(user);
 
         String token = jwtUtil.generateToken(user.getUsername());
 
@@ -83,6 +86,22 @@ public class UserService {
 
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok().body(userRepository.findAll());
+    }
+
+    public UserDTO showAuthUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (userRepository.findByUsernameIgnoreCase((String) authentication.getPrincipal()).isPresent()) {
+            User user = userRepository.findByUsernameIgnoreCase((String) authentication.getPrincipal()).get();
+            return UserDTO.builder()
+                    .firstname(user.getFirstname())
+                    .lastname(user.getLastname())
+                    .username(user.getUsername())
+                    .registerDate(user.getRegisterDate())
+                    .roles(user.getRoles())
+                    .build();
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "You are not registered yet!");
+        }
     }
 
     private void checkExistingUser(User user) {

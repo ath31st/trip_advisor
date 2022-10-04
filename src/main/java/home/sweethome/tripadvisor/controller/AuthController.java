@@ -1,13 +1,11 @@
 package home.sweethome.tripadvisor.controller;
 
 import home.sweethome.tripadvisor.dto.LoginCredentials;
+import home.sweethome.tripadvisor.dto.UserDTO;
 import home.sweethome.tripadvisor.entity.User;
 import home.sweethome.tripadvisor.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -25,5 +23,10 @@ public class AuthController {
     @PostMapping("/login")
     public Map<String, Object> loginHandler(@RequestBody LoginCredentials credentials) {
         return userService.getToken(credentials);
+    }
+
+    @GetMapping("/me")
+    public UserDTO showUser() {
+        return userService.showAuthUser();
     }
 }
