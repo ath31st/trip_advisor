@@ -6,6 +6,7 @@ trip:
 
 jwt:
   secret: VERY_SECRET_PHRASE_OOOF
+  refresh_secret: VERY_SECRET_PHRASE_FOR_REFRESH_TOKEN_OOOF
 
 
 spring:

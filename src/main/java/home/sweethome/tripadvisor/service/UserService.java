@@ -49,9 +49,10 @@ public class UserService {
 
         userRepository.save(user);
 
-        String token = jwtUtil.generateToken(user.getUsername());
+        String accessToken = jwtUtil.generateAccessToken(user.getUsername());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getUsername());
 
-        return Collections.singletonMap("token", token);
+        return Map.of("access token", accessToken, "refresh token", refreshToken);
     }
 
     public Map<String, Object> getToken(LoginCredentials credentials) {
@@ -61,7 +62,7 @@ public class UserService {
 
             authManager.authenticate(authInputToken);
 
-            String token = jwtUtil.generateToken(credentials.getEmail());
+            String token = jwtUtil.generateAccessToken(credentials.getEmail());
 
             return Collections.singletonMap("token", token);
         } catch (AuthenticationException authExc) {
