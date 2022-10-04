@@ -1,16 +1,30 @@
 version: "3.8"
 services:
   postgres:
+    image: postgres:14.5
+    container_name: postgres-container
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
 
   mongodb:
     image: mongo:5.0.5
+    container_name: mongo-container
     ports:
       - "27017:27017"
+
   trip-advisor:
     build: .
     ports:
       - "28853:28853"
     environment:
-      - spring.data.mongodb.host=mongodb
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-container:5432/postgres-container
+      - SPRING_DATASOURCE_USERNAME=compose-postgres
+      - SPRING_DATASOURCE_PASSWORD=compose-postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - spring.data.mongodb.host=mongo-container
     depends_on:
       - mongodb
+      - postgres

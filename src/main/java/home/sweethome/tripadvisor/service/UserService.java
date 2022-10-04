@@ -55,7 +55,7 @@ public class UserService {
         String accessToken = jwtUtil.generateAccessToken(user.getUsername());
         String refreshToken = jwtUtil.generateRefreshToken(user.getUsername());
 
- //       refreshTokenRepository.save(new RefreshToken(user.getUsername(),refreshToken));
+        refreshTokenRepository.save(new RefreshToken(user.getUsername(),refreshToken));
         return Map.of("access token", accessToken, "refresh token", refreshToken);
     }
 

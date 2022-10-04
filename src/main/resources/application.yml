@@ -12,10 +12,10 @@ jwt:
 spring:
   data:
     mongodb:
-      database: testMDB
-      username: mongo
-      password: mongo
-      uri: mongodb://mongo:mongo@localhost:27017/testMDB
+      database: refreshtokens
+#      host: mongo-container
+      host: localhost
+      port: 27017
 
   jpa:
     database: POSTGRESQL
