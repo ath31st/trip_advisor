@@ -1,20 +1,19 @@
 package home.sweethome.tripadvisor.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import home.sweethome.tripadvisor.util.CustomDataDeserializer;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
@@ -49,4 +48,13 @@ public class Weather {
     public int hashCode() {
         return getClass().hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "weather on " + date + System.lineSeparator()
+                + "max temperature: " + maxTemp + System.lineSeparator()
+                + "min temperature: " + minTemp + System.lineSeparator()
+                + "power wind: " + powerWind + System.lineSeparator();
+    }
+
 }

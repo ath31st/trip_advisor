@@ -13,13 +13,13 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
 public class Trip {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+    private String routeName;
     private int duration;
     @OneToOne
     private User user;
@@ -38,5 +38,11 @@ public class Trip {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    @Override
+    public String toString(){
+        return "route name: " + routeName + "\n"
+                + "duration: " + duration + " days" + "\n";
     }
 }

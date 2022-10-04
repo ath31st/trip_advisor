@@ -1,16 +1,20 @@
 package home.sweethome.tripadvisor.service;
 
 import home.sweethome.tripadvisor.dto.TripDTO;
+import home.sweethome.tripadvisor.dto.TripResponseDTO;
 import home.sweethome.tripadvisor.entity.Location;
 import home.sweethome.tripadvisor.entity.Trip;
 import home.sweethome.tripadvisor.entity.User;
+import home.sweethome.tripadvisor.entity.Weather;
 import home.sweethome.tripadvisor.repository.TripRepository;
 import home.sweethome.tripadvisor.util.LocationConverter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.*;
@@ -30,10 +34,31 @@ public class TripService {
         trip.setLocationList(getLocationList(tripDTO, trip));
         trip.setDuration(tripDTO.getDuration());
         trip.setUser(getUser());
-
+        trip.setRouteName(tripDTO.getFromAddress() + "-" + tripDTO.getToAddress());
         tripRepository.save(trip);
 
-        return ResponseEntity.ok().body(Collections.singletonMap("status", "success"));
+        return ResponseEntity.ok().body(Collections.singletonMap("status", "success, your route: " + trip.getRouteName()));
+    }
+
+    public TripResponseDTO getInfoTrip(String nameRoute) {
+        if (tripRepository.findByRouteNameIgnoreCase(nameRoute).isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Trip not found!");
+
+        Trip trip = tripRepository.findByRouteNameIgnoreCase(nameRoute).get();
+        List<Location> locationList = trip.getLocationList();
+        List<Weather> weatherList = locationList.stream().flatMap(l -> l.getWeather().stream()).toList();
+
+        StringBuilder lw = new StringBuilder();
+        locationList.forEach(l -> {
+            lw.append(l.toString());
+            weatherList.stream().filter(w-> w.getLocation().equals(l)).forEach(lw::append);
+        });
+
+        return TripResponseDTO.builder()
+                .duration(trip.getDuration())
+                .routeName(trip.getRouteName())
+                .infoLocation(lw.toString())
+                .build();
     }
 
     private User getUser() {

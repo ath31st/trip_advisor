@@ -1,6 +1,7 @@
 package home.sweethome.tripadvisor.controller;
 
 import home.sweethome.tripadvisor.dto.TripDTO;
+import home.sweethome.tripadvisor.dto.TripResponseDTO;
 import home.sweethome.tripadvisor.service.TripService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,4 +20,8 @@ public class TripController {
         return tripService.newTrip(tripDTO);
     }
 
+    @GetMapping("/route/{route}")
+    public TripResponseDTO tripInfoHandler(@PathVariable String route){
+        return tripService.getInfoTrip(route);
+    }
 }

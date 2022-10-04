@@ -9,7 +9,6 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
 @Entity
 public class Location {
@@ -41,6 +40,11 @@ public class Location {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "location: " + name + System.lineSeparator();
     }
 
 }
