@@ -36,3 +36,13 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+task customFatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'home.sweethome.tripadvisor.TripAdvisor'
+    }
+    baseName = 'trip-advisor'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}

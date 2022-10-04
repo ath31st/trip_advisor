@@ -2,7 +2,9 @@ package home.sweethome.tripadvisor.service;
 
 import home.sweethome.tripadvisor.dto.LoginCredentials;
 import home.sweethome.tripadvisor.dto.UserDTO;
+import home.sweethome.tripadvisor.entity.RefreshToken;
 import home.sweethome.tripadvisor.entity.User;
+import home.sweethome.tripadvisor.repository.RefreshTokenRepository;
 import home.sweethome.tripadvisor.repository.UserRepository;
 import home.sweethome.tripadvisor.util.JWT.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JWTUtil jwtUtil;
     private final AuthenticationManager authManager;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public Map<String, Object> saveUser(User user) {
         checkExistingUser(user);
@@ -52,6 +55,7 @@ public class UserService {
         String accessToken = jwtUtil.generateAccessToken(user.getUsername());
         String refreshToken = jwtUtil.generateRefreshToken(user.getUsername());
 
+ //       refreshTokenRepository.save(new RefreshToken(user.getUsername(),refreshToken));
         return Map.of("access token", accessToken, "refresh token", refreshToken);
     }
 
