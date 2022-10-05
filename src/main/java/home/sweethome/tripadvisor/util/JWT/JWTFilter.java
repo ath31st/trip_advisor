@@ -33,7 +33,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT Token in Bearer Header");
             } else {
                 try {
-                    String username = jwtUtil.validateTokenAndRetrieveSubject(jwt);
+                    String username = jwtUtil.validateAccessTokenAndRetrieveSubject(jwt);
                     UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(username, userDetails.getPassword(), userDetails.getAuthorities());

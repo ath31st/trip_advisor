@@ -45,8 +45,16 @@ public class JWTUtil {
                 .sign(Algorithm.HMAC256(refreshSecret));
     }
 
-    public String validateTokenAndRetrieveSubject(String token)throws JWTVerificationException {
+    public String validateAccessTokenAndRetrieveSubject(String token)throws JWTVerificationException {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
+                .withSubject("User Details")
+                .withIssuer("Trip Advisor")
+                .build();
+        DecodedJWT jwt = verifier.verify(token);
+        return jwt.getClaim("email").asString();
+    }
+    public String validateRefreshTokenAndRetrieveSubject(String token)throws JWTVerificationException {
+        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(refreshSecret))
                 .withSubject("User Details")
                 .withIssuer("Trip Advisor")
                 .build();

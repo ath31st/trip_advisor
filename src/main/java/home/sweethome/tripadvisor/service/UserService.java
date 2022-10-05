@@ -56,22 +56,7 @@ public class UserService {
         String refreshToken = jwtUtil.generateRefreshToken(user.getUsername());
 
         refreshTokenRepository.save(new RefreshToken(user.getUsername(),refreshToken));
-        return Map.of("access token", accessToken, "refresh token", refreshToken);
-    }
-
-    public Map<String, Object> getToken(LoginCredentials credentials) {
-        try {
-            UsernamePasswordAuthenticationToken authInputToken =
-                    new UsernamePasswordAuthenticationToken(credentials.getEmail(), credentials.getPassword());
-
-            authManager.authenticate(authInputToken);
-
-            String token = jwtUtil.generateAccessToken(credentials.getEmail());
-
-            return Collections.singletonMap("token", token);
-        } catch (AuthenticationException authExc) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Login Credentials");
-        }
+        return Map.of("access token", accessToken, "getRefreshToken token", refreshToken);
     }
 
     public User getByUsername(String username) {
