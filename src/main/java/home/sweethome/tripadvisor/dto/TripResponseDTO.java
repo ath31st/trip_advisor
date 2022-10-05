@@ -11,7 +11,7 @@ public class TripResponseDTO {
     @JsonProperty("route name")
     private String routeName;
     private int duration;
-    @JsonProperty("info location")
-    private String infoLocation;
+    @JsonProperty("info locations")
+    private String infoLocationFromTO;
 
 }

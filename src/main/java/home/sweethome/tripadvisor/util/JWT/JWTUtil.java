@@ -23,7 +23,7 @@ public class JWTUtil {
 
     public String generateAccessToken(String email) throws IllegalArgumentException, JWTCreationException {
         final LocalDateTime now = LocalDateTime.now();
-        final Instant accessExpirationInstant = now.plusMinutes(5).atZone(ZoneId.systemDefault()).toInstant();
+        final Instant accessExpirationInstant = now.plusMinutes(50).atZone(ZoneId.systemDefault()).toInstant();
 
         return JWT.create()
                 .withSubject("User Details")
