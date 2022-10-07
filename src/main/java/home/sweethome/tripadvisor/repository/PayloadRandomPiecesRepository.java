@@ -1,14 +1,14 @@
 package home.sweethome.tripadvisor.repository;
 
-import home.sweethome.tripadvisor.entity.PayloadHash;
+import home.sweethome.tripadvisor.entity.PayloadRandomPiece;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PayloadHashRepository extends MongoRepository<PayloadHash, String> {
+public interface PayloadRandomPiecesRepository extends MongoRepository<PayloadRandomPiece, String> {
 
     @Query("{username:'?0'}")
-    PayloadHash findByUsernameIgnoreCase(String username);
+    PayloadRandomPiece findByUsernameIgnoreCase(String username);
 
 }

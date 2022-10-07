@@ -6,14 +6,14 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document("payloadhashes")
+@Document("payloadpieces")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PayloadHash {
+public class PayloadRandomPiece {
 
     @Id
     private String username;
-    private String hash;
+    private String uuid;
 
 }

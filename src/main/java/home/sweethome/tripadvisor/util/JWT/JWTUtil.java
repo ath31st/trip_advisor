@@ -6,8 +6,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import home.sweethome.tripadvisor.entity.PayloadHash;
-import home.sweethome.tripadvisor.repository.PayloadHashRepository;
+import home.sweethome.tripadvisor.entity.PayloadRandomPiece;
+import home.sweethome.tripadvisor.repository.PayloadRandomPiecesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ public class JWTUtil {
     @Value("${jwt.refresh_secret}")
     private String refreshSecret;
 
-    private final PayloadHashRepository payloadHashRepository;
+    private final PayloadRandomPiecesRepository payloadRandomPiecesRepository;
 
     public String generateAccessToken(String email) throws IllegalArgumentException, JWTCreationException {
         final LocalDateTime now = LocalDateTime.now();
@@ -43,16 +43,16 @@ public class JWTUtil {
     public String generateRefreshToken(String email) throws IllegalArgumentException, JWTCreationException {
         final LocalDateTime now = LocalDateTime.now();
         final Instant refreshExpirationInstant = now.plusDays(30).atZone(ZoneId.systemDefault()).toInstant();
-        final String randomHash = String.valueOf(UUID.randomUUID().hashCode());
+        String uuid = UUID.randomUUID().toString();
 
-        payloadHashRepository.save(new PayloadHash(email, randomHash));
+        payloadRandomPiecesRepository.save(new PayloadRandomPiece(email, uuid));
 
         return JWT.create()
                 .withSubject("User Details")
                 .withClaim("email", email)
                 .withExpiresAt(refreshExpirationInstant)
                 .withIssuer("Trip Advisor")
-                .withPayload(Collections.singletonMap("hash", randomHash))
+                .withPayload(Collections.singletonMap("UUID", uuid))
                 .sign(Algorithm.HMAC256(refreshSecret));
     }
 
@@ -72,10 +72,10 @@ public class JWTUtil {
                 .build();
         DecodedJWT jwt = verifier.verify(token);
         String username = jwt.getClaim("email").asString();
-        String savedHash = payloadHashRepository.findByUsernameIgnoreCase(username).getHash();
+        String savedUuid = payloadRandomPiecesRepository.findByUsernameIgnoreCase(username).getUuid();
 
-        if (!savedHash.equals(jwt.getClaim("hash").asString())) {
-            throw new JWTVerificationException("Invalid token hash");
+        if (!savedUuid.equals(jwt.getClaim("UUID").asString())) {
+            throw new JWTVerificationException("Invalid token UUID");
         }
         return username;
     }
