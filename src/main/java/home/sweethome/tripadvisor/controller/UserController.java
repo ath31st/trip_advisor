@@ -1,5 +1,6 @@
 package home.sweethome.tripadvisor.controller;
 
+import home.sweethome.tripadvisor.dto.Jwt.JwtResponse;
 import home.sweethome.tripadvisor.dto.UserDTO;
 import home.sweethome.tripadvisor.entity.User;
 import home.sweethome.tripadvisor.service.UserService;
@@ -17,7 +18,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public Map<String, Object> registerHandler(@RequestBody User user) {
+    public ResponseEntity<JwtResponse> registerHandler(@RequestBody User user) {
         return userService.saveUser(user);
     }
 

@@ -6,15 +6,14 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-
-
-@Document("refreshtokens")
+@Document("payloadhashes")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefreshToken {
+public class PayloadHash {
 
     @Id
     private String username;
-    private String token;
+    private String hash;
+
 }

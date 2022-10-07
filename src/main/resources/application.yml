@@ -12,7 +12,7 @@ jwt:
 spring:
   data:
     mongodb:
-      database: refreshtokens
+      database: mongo-container
 #      host: mongo-container
       host: localhost
       port: 27017
@@ -21,7 +21,7 @@ spring:
     database: POSTGRESQL
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
   sql:
     init:
       platform: postgres
