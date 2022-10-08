@@ -90,12 +90,14 @@ public class TripService {
         List<Location> locationList = new ArrayList<>();
 
         try {
-            Location locationFrom = locationConverter.stringAddressToGeocode(tripRequestDTO.getFromAddress());
+            Location locationFrom = locationConverter.stringAddressToGeocode(
+                    convertInputStringAddress(tripRequestDTO.getFromAddress()));
             locationFrom.setWeather(weatherService.getForecast(locationFrom));
             locationFrom.setTrip(trip);
             locationList.add(locationFrom);
 
-            Location locationTo = locationConverter.stringAddressToGeocode(tripRequestDTO.getToAddress());
+            Location locationTo = locationConverter.stringAddressToGeocode(
+                    convertInputStringAddress(tripRequestDTO.getToAddress()));
             locationTo.setWeather(weatherService.getForecast(locationTo));
             locationTo.setTrip(trip);
             locationList.add(locationTo);
@@ -104,6 +106,10 @@ public class TripService {
         }
 
         return locationList;
+    }
+
+    private String convertInputStringAddress(String address) {
+        return address.trim().replace(" ", "_");
     }
 
 }
