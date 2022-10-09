@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.9"
 services:
   postgres:
     image: postgres:14.5
@@ -6,8 +6,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgresDB
 
   mongodb:
     image: mongo:5.0.5
@@ -17,14 +18,14 @@ services:
 
   trip-advisor:
     build: .
-    ports:
-      - "28853:28853"
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-container:5432/postgres-container
-      - SPRING_DATASOURCE_USERNAME=compose-postgres
-      - SPRING_DATASOURCE_PASSWORD=compose-postgres
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - spring.data.mongodb.host=mongo-container
+#    ports:
+#      - "28853:28853"
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-container:5432/postgresDB
+#      SPRING_DATASOURCE_USERNAME: postgres
+#      SPRING_DATASOURCE_PASSWORD: postgres
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#      SPRING_DATA_MONGODB_HOST: mongo-container
     depends_on:
       - mongodb
       - postgres
