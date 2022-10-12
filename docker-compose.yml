@@ -9,23 +9,35 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgresDB
+    restart: always
 
   mongodb:
     image: mongo:5.0.5
     container_name: mongo-container
     ports:
       - "27017:27017"
+    restart: always
 
   trip-advisor:
     build: .
-#    ports:
-#      - "28853:28853"
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-container:5432/postgresDB
-#      SPRING_DATASOURCE_USERNAME: postgres
-#      SPRING_DATASOURCE_PASSWORD: postgres
-#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-#      SPRING_DATA_MONGODB_HOST: mongo-container
+    ports:
+      - "28853:28853"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-container:5432/postgresDB
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create
+      SPRING_JPA_DATABASE: POSTGRESQL
+      spring_jpa_show-sql: true
+      spring_sql_init_platform: postgres
+
+      SPRING_DATA_MONGODB_HOST: mongo-container
+      SPRING_DATA_MONGODB_DATABASE: mongo-container
+      SPRING_DATA_MONGODB_PORT: 27017
+      trip_yandexapikey: ${YANDEX_API_KEY}
+      jwt_secret: ${JWT_SECRET}
+      jwt_refresh_secret: ${JWT_REFRESH_SECRET}
+
     depends_on:
-      - mongodb
       - postgres
+      - mongodb

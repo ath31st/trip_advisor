@@ -1,4 +1,4 @@
-package home.sweethome.tripadvisor.repository;
+package home.sweethome.tripadvisor.mongorepository;
 
 import home.sweethome.tripadvisor.entity.PayloadRandomPiece;
 import org.springframework.data.mongodb.repository.MongoRepository;

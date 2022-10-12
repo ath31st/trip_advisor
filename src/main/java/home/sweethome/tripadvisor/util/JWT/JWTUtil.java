@@ -7,7 +7,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import home.sweethome.tripadvisor.entity.PayloadRandomPiece;
-import home.sweethome.tripadvisor.repository.PayloadRandomPiecesRepository;
+import home.sweethome.tripadvisor.mongorepository.PayloadRandomPiecesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

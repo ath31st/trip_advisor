@@ -8,13 +8,12 @@ jwt:
   secret: VERY_SECRET_PHRASE_OOOF
   refresh_secret: VERY_SECRET_PHRASE_FOR_REFRESH_TOKEN_OOOF
 
-
 spring:
   data:
     mongodb:
       database: mongo-container
-      host: mongo-container
- #     host: localhost
+      #host: mongo-container
+      host: localhost
       port: 27017
 
   jpa:
@@ -27,8 +26,8 @@ spring:
       platform: postgres
 
   datasource:
-#    url: jdbc:postgresql://localhost:5432/postgresDB
-    url: jdbc:postgresql://postgres-container:5432/postgresDB
+    url: jdbc:postgresql://localhost:5432/postgresDB
+    #url: jdbc:postgresql://postgres-container:5432/postgresDB
     username: postgres
     password: postgres
     driverClassName: org.postgresql.Driver
