@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,6 +22,7 @@ public class Trip {
     private Long id;
     @Column(unique = true)
     private String routeName;
+    private Date startDate;
     private int duration;
     @OneToOne
     private User user;

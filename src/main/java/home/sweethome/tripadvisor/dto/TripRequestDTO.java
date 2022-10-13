@@ -16,6 +16,9 @@ public class TripRequestDTO {
     @JsonProperty("to")
     @NotBlank
     private String toAddress;
+    @JsonProperty("start date")
+    @NotBlank
+    private String startDate;
     @Min(1)
     @Max(30)
     private int duration;

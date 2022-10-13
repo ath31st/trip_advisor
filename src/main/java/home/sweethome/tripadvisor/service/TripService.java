@@ -18,10 +18,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,8 +40,13 @@ public class TripService {
             throw new TripServiceException(HttpStatus.CONFLICT, "Trip with route name " + routeName
                     + " already exists!");
 
+        LocalDate localDate = LocalDate.parse(tripRequestDTO.getStartDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        if (localDate.isBefore(LocalDate.now()))
+            throw new TripServiceException(HttpStatus.BAD_REQUEST, "Wrong start date");
+
         Trip trip = new Trip();
         trip.setLocationList(getLocationList(tripRequestDTO, trip));
+        trip.setStartDate(Date.valueOf(localDate));
         trip.setDuration(tripRequestDTO.getDuration());
         trip.setUser(user);
         trip.setRouteName(routeName);
@@ -59,6 +64,7 @@ public class TripService {
 
         return ResponseEntity.ok(TripResponseDTO.builder()
                 .duration(trip.getDuration())
+                .startDate(trip.getStartDate().toString())
                 .routeName(trip.getRouteName())
                 .infoLocationFromTO(locationList
                         .stream()
@@ -89,7 +95,7 @@ public class TripService {
     public ResponseEntity<Map<String, String>> changeDuration(String nameRoute, int newDuration) {
         Trip trip = getTrip(nameRoute);
 
-        if(trip.getDuration() == newDuration)
+        if (trip.getDuration() == newDuration)
             throw new TripServiceException(HttpStatus.CONFLICT, "This duration already set!");
 
         trip.setDuration(newDuration);
