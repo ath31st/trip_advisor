@@ -4,11 +4,9 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class TripServiceException extends RuntimeException {
-    private final HttpStatus status;
+public class TripServiceException extends AbstractException {
 
     public TripServiceException(HttpStatus status, String errorMessage) {
-        super(errorMessage);
-        this.status = status;
+        super(status, errorMessage);
     }
 }
