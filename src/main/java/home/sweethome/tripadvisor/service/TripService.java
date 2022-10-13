@@ -7,6 +7,7 @@ import home.sweethome.tripadvisor.entity.Location;
 import home.sweethome.tripadvisor.entity.Trip;
 import home.sweethome.tripadvisor.entity.User;
 import home.sweethome.tripadvisor.entity.Weather;
+import home.sweethome.tripadvisor.exceptionhandler.exception.TripServiceException;
 import home.sweethome.tripadvisor.repository.TripRepository;
 import home.sweethome.tripadvisor.util.LocationConverter;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +48,7 @@ public class TripService {
 
     public ResponseEntity<TripResponseDTO> getInfoTrip(String nameRoute) {
         if (tripRepository.findByRouteNameIgnoreCase(nameRoute).isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Trip not found!");
+            throw new TripServiceException(HttpStatus.NOT_FOUND, "Trip not found!");
 
         Trip trip = tripRepository.findByRouteNameIgnoreCase(nameRoute).get();
         List<Location> locationList = trip.getLocationList();
@@ -62,7 +65,7 @@ public class TripService {
 
     public ResponseEntity<List<WeatherDTO>> getForecastTrip(String nameRoute) {
         if (tripRepository.findByRouteNameIgnoreCase(nameRoute).isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Trip not found!");
+            throw new TripServiceException(HttpStatus.NOT_FOUND, "Trip not found!");
 
         Trip trip = tripRepository.findByRouteNameIgnoreCase(nameRoute).get();
         List<Location> locationList = trip.getLocationList();

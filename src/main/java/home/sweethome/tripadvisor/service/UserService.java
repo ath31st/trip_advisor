@@ -4,6 +4,7 @@ import home.sweethome.tripadvisor.dto.ChangePassDTO;
 import home.sweethome.tripadvisor.dto.Jwt.JwtResponse;
 import home.sweethome.tripadvisor.dto.UserDTO;
 import home.sweethome.tripadvisor.entity.User;
+import home.sweethome.tripadvisor.exceptionhandler.exception.UserServiceException;
 import home.sweethome.tripadvisor.repository.UserRepository;
 import home.sweethome.tripadvisor.util.JWT.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -60,7 +60,7 @@ public class UserService {
 
     public ResponseEntity<Map<String, String>> deleteUser(String username) {
         if (userRepository.findByUsernameIgnoreCase(username).isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with username: " + username + " nor found!");
+            throw new UserServiceException(HttpStatus.NOT_FOUND, "User with username: " + username + " nor found!");
 
         userRepository.delete(userRepository.findByUsernameIgnoreCase(username).get());
         return ResponseEntity.ok().body(Collections.singletonMap("status", "User with username " + username + " successful deleted!"));
@@ -72,7 +72,7 @@ public class UserService {
 
     public UserDTO showAuthUser(Principal principal) {
         User user = userRepository.findByUsernameIgnoreCase(principal.getName()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
+                () -> new UserServiceException(HttpStatus.NOT_FOUND, "User not found!"));
         return UserDTO.builder()
                 .firstname(user.getFirstname())
                 .lastname(user.getLastname())
@@ -84,23 +84,23 @@ public class UserService {
 
     private void checkExistingUser(User user) {
         if (userRepository.findByUsernameIgnoreCase(user.getUsername()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "User with name: " + user.getUsername() + " already exists!");
+            throw new UserServiceException(HttpStatus.CONFLICT, "User with username: " + user.getUsername() + " already exists!");
         }
     }
 
     public ResponseEntity<Map<String, String>> changePassword(ChangePassDTO changePassDTO, Principal principal) {
         if (changePassDTO.getOldPass().equals(changePassDTO.getNewPass()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passwords don't be equals");
+            throw new UserServiceException(HttpStatus.BAD_REQUEST, "Passwords don't be equals");
 
         User user = userRepository.findByUsernameIgnoreCase(principal.getName()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
+                () -> new UserServiceException(HttpStatus.NOT_FOUND, "User not found!"));
         if (bCryptPasswordEncoder.matches(changePassDTO.getOldPass(), user.getPassword())) {
             user.setPassword(bCryptPasswordEncoder.encode(changePassDTO.getNewPass()));
             userRepository.save(user);
 
             return ResponseEntity.ok(Collections.singletonMap("status", "password successfully changed"));
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong old password!");
+            throw new UserServiceException(HttpStatus.BAD_REQUEST, "Wrong old password");
         }
 
     }

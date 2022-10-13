@@ -3,16 +3,15 @@ package home.sweethome.tripadvisor.util.JWT;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import home.sweethome.tripadvisor.entity.PayloadRandomPiece;
+import home.sweethome.tripadvisor.exceptionhandler.exception.PayloadPieceException;
 import home.sweethome.tripadvisor.mongorepository.PayloadRandomPiecesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -30,7 +29,7 @@ public class JWTUtil {
 
     private final PayloadRandomPiecesRepository payloadRandomPiecesRepository;
 
-    public String generateAccessToken(String email) throws IllegalArgumentException, JWTCreationException {
+    public String generateAccessToken(String email) {
         final LocalDateTime now = LocalDateTime.now();
         final Instant accessExpirationInstant = now.plusMinutes(50).atZone(ZoneId.systemDefault()).toInstant();
 
@@ -42,7 +41,7 @@ public class JWTUtil {
                 .sign(Algorithm.HMAC256(secret));
     }
 
-    public String generateRefreshToken(String email) throws IllegalArgumentException, JWTCreationException {
+    public String generateRefreshToken(String email) {
         final LocalDateTime now = LocalDateTime.now();
         final Instant refreshExpirationInstant = now.plusDays(30).atZone(ZoneId.systemDefault()).toInstant();
         String uuid = UUID.randomUUID().toString();
@@ -58,7 +57,7 @@ public class JWTUtil {
                 .sign(Algorithm.HMAC256(refreshSecret));
     }
 
-    public String validateAccessTokenAndRetrieveSubject(String token) throws JWTVerificationException {
+    public String validateAccessTokenAndRetrieveSubject(String token) {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
                 .withSubject("User Details")
                 .withIssuer("Trip Advisor")
@@ -67,7 +66,7 @@ public class JWTUtil {
         return jwt.getClaim("email").asString();
     }
 
-    public String validateRefreshTokenAndRetrieveSubject(String token) throws JWTVerificationException {
+    public String validateRefreshTokenAndRetrieveSubject(String token) {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(refreshSecret))
                 .withSubject("User Details")
                 .withIssuer("Trip Advisor")
@@ -75,8 +74,7 @@ public class JWTUtil {
         DecodedJWT jwt = verifier.verify(token);
         String username = jwt.getClaim("email").asString();
         if (payloadRandomPiecesRepository.findByUsernameIgnoreCase(username) == null)
-            //throw new JWTVerificationException("Payload piece not found!");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Refresh token is deleted. You need to login!");
+            throw new PayloadPieceException(HttpStatus.NOT_FOUND, "Payload piece not found!");
 
         String savedUuid = payloadRandomPiecesRepository.findByUsernameIgnoreCase(username).getUuid();
 
@@ -91,7 +89,7 @@ public class JWTUtil {
         if (piece != null) {
             payloadRandomPiecesRepository.delete(payloadRandomPiecesRepository.findByUsernameIgnoreCase(username));
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "payload piece not found!");
+            throw new PayloadPieceException(HttpStatus.NOT_FOUND, "Payload piece not found!");
         }
     }
 

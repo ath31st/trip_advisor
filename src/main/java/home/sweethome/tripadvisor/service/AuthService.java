@@ -3,13 +3,13 @@ package home.sweethome.tripadvisor.service;
 import home.sweethome.tripadvisor.dto.Jwt.JwtResponse;
 import home.sweethome.tripadvisor.dto.LoginCredentials;
 import home.sweethome.tripadvisor.entity.User;
+import home.sweethome.tripadvisor.exceptionhandler.exception.LoginCredentialException;
 import home.sweethome.tripadvisor.util.JWT.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.Collections;
@@ -30,7 +30,7 @@ public class AuthService {
 
             return new JwtResponse(accessToken, refreshToken);
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Login Credentials");
+            throw new LoginCredentialException(HttpStatus.BAD_REQUEST, "Invalid login credentials");
         }
     }
 
