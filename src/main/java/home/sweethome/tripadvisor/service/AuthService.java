@@ -6,9 +6,14 @@ import home.sweethome.tripadvisor.entity.User;
 import home.sweethome.tripadvisor.util.JWT.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.security.Principal;
+import java.util.Collections;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +32,11 @@ public class AuthService {
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Login Credentials");
         }
+    }
+
+    public ResponseEntity<Map<String, String>> logout(Principal principal) {
+        jwtUtil.deletePayloadRandomPieces(principal.getName());
+        return ResponseEntity.ok().body(Collections.singletonMap("status", "You successfully logout!"));
     }
 
     public JwtResponse getAccessToken(String refreshToken) {

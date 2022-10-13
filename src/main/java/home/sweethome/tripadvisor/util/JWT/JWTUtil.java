@@ -10,7 +10,9 @@ import home.sweethome.tripadvisor.entity.PayloadRandomPiece;
 import home.sweethome.tripadvisor.mongorepository.PayloadRandomPiecesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -72,12 +74,25 @@ public class JWTUtil {
                 .build();
         DecodedJWT jwt = verifier.verify(token);
         String username = jwt.getClaim("email").asString();
+        if (payloadRandomPiecesRepository.findByUsernameIgnoreCase(username) == null)
+            //throw new JWTVerificationException("Payload piece not found!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Refresh token is deleted. You need to login!");
+
         String savedUuid = payloadRandomPiecesRepository.findByUsernameIgnoreCase(username).getUuid();
 
         if (!savedUuid.equals(jwt.getClaim("UUID").asString())) {
             throw new JWTVerificationException("Invalid token UUID");
         }
         return username;
+    }
+
+    public void deletePayloadRandomPieces(String username) {
+        PayloadRandomPiece piece = payloadRandomPiecesRepository.findByUsernameIgnoreCase(username);
+        if (piece != null) {
+            payloadRandomPiecesRepository.delete(payloadRandomPiecesRepository.findByUsernameIgnoreCase(username));
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "payload piece not found!");
+        }
     }
 
 }

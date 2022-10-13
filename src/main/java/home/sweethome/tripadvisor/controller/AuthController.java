@@ -7,10 +7,7 @@ import home.sweethome.tripadvisor.dto.LoginCredentials;
 import home.sweethome.tripadvisor.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.Map;
@@ -25,6 +22,11 @@ public class AuthController {
     public ResponseEntity<JwtResponse> loginHandler(@RequestBody LoginCredentials credentials) {
         final JwtResponse token = authService.login(credentials);
         return ResponseEntity.ok(token);
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout(Principal principal) {
+        return authService.logout(principal);
     }
 
     @PostMapping("/token")
