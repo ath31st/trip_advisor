@@ -33,14 +33,18 @@ public class TripService {
     private final UserService userService;
 
     public ResponseEntity<Map<String, String>> newTrip(TripRequestDTO tripRequestDTO) {
+        User user = getUser();
+        String routeName = user.getUsername().hashCode() + "-" + tripRequestDTO.getFromAddress().substring(0, 2)
+                + "-" + tripRequestDTO.getToAddress().substring(0, 2);
+        if (tripRepository.findByRouteNameIgnoreCase(routeName).isPresent())
+            throw new TripServiceException(HttpStatus.CONFLICT, "Trip with route name " + routeName
+                    + " already exists!");
 
         Trip trip = new Trip();
-
         trip.setLocationList(getLocationList(tripRequestDTO, trip));
         trip.setDuration(tripRequestDTO.getDuration());
-        trip.setUser(getUser());
-        trip.setRouteName(tripRequestDTO.getFromAddress().substring(0, 2) + "-"
-                + tripRequestDTO.getToAddress().substring(0, 2) + "-" + tripRequestDTO.getDuration());
+        trip.setUser(user);
+        trip.setRouteName(routeName);
         tripRepository.save(trip);
 
         return ResponseEntity.ok().body(Collections.singletonMap("status", "success, your route: " + trip.getRouteName()));
@@ -64,10 +68,8 @@ public class TripService {
     }
 
     public ResponseEntity<List<WeatherDTO>> getForecastTrip(String nameRoute) {
-        if (tripRepository.findByRouteNameIgnoreCase(nameRoute).isEmpty())
-            throw new TripServiceException(HttpStatus.NOT_FOUND, "Trip not found!");
 
-        Trip trip = tripRepository.findByRouteNameIgnoreCase(nameRoute).get();
+        Trip trip = getTrip(nameRoute);
         List<Location> locationList = trip.getLocationList();
         List<Weather> weatherList = locationList.stream().flatMap(l -> l.getWeather().stream()).toList();
 
@@ -82,6 +84,19 @@ public class TripService {
                 .toList();
 
         return ResponseEntity.ok(list);
+    }
+
+    public ResponseEntity<Map<String, String>> changeDuration(String nameRoute, int newDuration) {
+        Trip trip = getTrip(nameRoute);
+
+        if(trip.getDuration() == newDuration)
+            throw new TripServiceException(HttpStatus.CONFLICT, "This duration already set!");
+
+        trip.setDuration(newDuration);
+        tripRepository.save(trip);
+
+        return ResponseEntity.ok().body(Collections.singletonMap(
+                "status", "Duration successfully changed on " + newDuration + " days."));
     }
 
     private User getUser() {
@@ -115,4 +130,8 @@ public class TripService {
         return address.trim().replace(" ", "_");
     }
 
+    private Trip getTrip(String nameRoute) {
+        return tripRepository.findByRouteNameIgnoreCase(nameRoute).orElseThrow(() ->
+                new TripServiceException(HttpStatus.NOT_FOUND, "Trip not found!"));
+    }
 }

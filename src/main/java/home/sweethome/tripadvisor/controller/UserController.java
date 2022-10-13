@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotBlank;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class UserController {
     }
 
     @DeleteMapping("/delete/{email}")
-    public ResponseEntity<Map<String, String>> deleteHandler(@PathVariable String email) {
+    public ResponseEntity<Map<String, String>> deleteHandler(@PathVariable @NotBlank String email) {
         return userService.deleteUser(email);
     }
 
@@ -39,7 +40,7 @@ public class UserController {
         return userService.showAuthUser(principal);
     }
 
-    @PostMapping("/change_password")
+    @PostMapping("/change-password")
     public ResponseEntity<Map<String, String>> passwordHandler(@RequestBody ChangePassDTO changePassDTO, Principal principal) {
         return userService.changePassword(changePassDTO, principal);
     }

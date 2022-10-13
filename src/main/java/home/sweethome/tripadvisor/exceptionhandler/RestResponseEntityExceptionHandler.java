@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 
 @ControllerAdvice
@@ -15,6 +16,16 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(JWTVerificationException.class)
     protected ResponseEntity<Response> handleJwtException(JWTVerificationException e) {
+        Response response = Response.builder()
+                .timestamp(LocalDateTime.now().toString())
+                .error(e.getMessage())
+                .status(HttpStatus.BAD_REQUEST)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<Response> handleValidException(ConstraintViolationException e) {
         Response response = Response.builder()
                 .timestamp(LocalDateTime.now().toString())
                 .error(e.getMessage())
@@ -44,7 +55,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     }
 
     private Response buildResponse(AbstractException e) {
-        return  Response.builder()
+        return Response.builder()
                 .timestamp(LocalDateTime.now().toString())
                 .error(e.getMessage())
                 .status(e.getStatus())
