@@ -1,5 +1,6 @@
 package home.sweethome.tripadvisor.controller;
 
+import home.sweethome.tripadvisor.dto.ChangePassDTO;
 import home.sweethome.tripadvisor.dto.Jwt.JwtResponse;
 import home.sweethome.tripadvisor.dto.Jwt.RefreshJwtRequest;
 import home.sweethome.tripadvisor.dto.LoginCredentials;
@@ -10,6 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Principal;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor

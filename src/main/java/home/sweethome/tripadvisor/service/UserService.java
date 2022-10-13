@@ -1,5 +1,6 @@
 package home.sweethome.tripadvisor.service;
 
+import home.sweethome.tripadvisor.dto.ChangePassDTO;
 import home.sweethome.tripadvisor.dto.Jwt.JwtResponse;
 import home.sweethome.tripadvisor.dto.UserDTO;
 import home.sweethome.tripadvisor.entity.User;
@@ -8,13 +9,12 @@ import home.sweethome.tripadvisor.util.JWT.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -70,20 +70,16 @@ public class UserService {
         return ResponseEntity.ok().body(userRepository.findAll());
     }
 
-    public UserDTO showAuthUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (userRepository.findByUsernameIgnoreCase((String) authentication.getPrincipal()).isPresent()) {
-            User user = userRepository.findByUsernameIgnoreCase((String) authentication.getPrincipal()).get();
-            return UserDTO.builder()
-                    .firstname(user.getFirstname())
-                    .lastname(user.getLastname())
-                    .username(user.getUsername())
-                    .registerDate(user.getRegisterDate())
-                    .roles(user.getRoles())
-                    .build();
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "You are not registered yet!");
-        }
+    public UserDTO showAuthUser(Principal principal) {
+        User user = userRepository.findByUsernameIgnoreCase(principal.getName()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
+        return UserDTO.builder()
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .username(user.getUsername())
+                .registerDate(user.getRegisterDate())
+                .roles(user.getRoles())
+                .build();
     }
 
     private void checkExistingUser(User user) {
@@ -91,4 +87,22 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User with name: " + user.getUsername() + " already exists!");
         }
     }
+
+    public ResponseEntity<Map<String, String>> changePassword(ChangePassDTO changePassDTO, Principal principal) {
+        if (changePassDTO.getOldPass().equals(changePassDTO.getNewPass()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passwords don't be equals");
+
+        User user = userRepository.findByUsernameIgnoreCase(principal.getName()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
+        if (bCryptPasswordEncoder.matches(changePassDTO.getOldPass(), user.getPassword())) {
+            user.setPassword(bCryptPasswordEncoder.encode(changePassDTO.getNewPass()));
+            userRepository.save(user);
+
+            return ResponseEntity.ok(Collections.singletonMap("status", "password successfully changed"));
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong old password!");
+        }
+
+    }
+
 }

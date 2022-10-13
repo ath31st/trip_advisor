@@ -1,8 +1,0 @@
-{
-  "properties": [
-    {
-      "name": "trip.yandexapikey",
-      "type": "java.lang.String",
-      "description": "Description for trip.yandexapikey."
-  }
-] }

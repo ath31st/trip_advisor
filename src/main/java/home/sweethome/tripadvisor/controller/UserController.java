@@ -1,5 +1,6 @@
 package home.sweethome.tripadvisor.controller;
 
+import home.sweethome.tripadvisor.dto.ChangePassDTO;
 import home.sweethome.tripadvisor.dto.Jwt.JwtResponse;
 import home.sweethome.tripadvisor.dto.UserDTO;
 import home.sweethome.tripadvisor.entity.User;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +35,13 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public UserDTO showUser() {
-        return userService.showAuthUser();
+    public UserDTO showUser(Principal principal) {
+        return userService.showAuthUser(principal);
     }
+
+    @PostMapping("/change_password")
+    public ResponseEntity<Map<String, String>> passwordHandler(@RequestBody ChangePassDTO changePassDTO, Principal principal) {
+        return userService.changePassword(changePassDTO, principal);
+    }
+
 }
