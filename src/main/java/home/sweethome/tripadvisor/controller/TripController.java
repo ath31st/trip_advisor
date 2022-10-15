@@ -13,6 +13,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public class TripController {
         return tripService.newTrip(tripRequestDTO);
     }
 
-    @GetMapping("/route/{route}")
+    @GetMapping("/route-info/{route}")
     public ResponseEntity<TripResponseDTO> tripInfo(@PathVariable @NotBlank String route) {
         return tripService.getInfoTrip(route);
     }
@@ -42,6 +43,12 @@ public class TripController {
     public ResponseEntity<Map<String, String>> durationHandler(@PathVariable @NotBlank String route,
                                                                 @RequestParam @Min(1) @Max(30) int duration) {
         return tripService.changeDuration(route, duration);
+    }
+
+    @DeleteMapping("/delete-trip/{route}")
+    public ResponseEntity<Map<String,String>> deleteTrip(@PathVariable @NotBlank String route,
+                                                         Principal principal){
+        return tripService.deleteTrip(route, principal);
     }
 
 }

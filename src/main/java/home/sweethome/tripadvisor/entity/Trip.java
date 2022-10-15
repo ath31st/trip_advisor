@@ -24,6 +24,7 @@ public class Trip {
     private String routeName;
     private Date startDate;
     private int duration;
+    private int distance;
     @OneToOne
     private User user;
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)

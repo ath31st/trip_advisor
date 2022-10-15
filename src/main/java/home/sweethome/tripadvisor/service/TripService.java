@@ -9,6 +9,7 @@ import home.sweethome.tripadvisor.entity.User;
 import home.sweethome.tripadvisor.entity.Weather;
 import home.sweethome.tripadvisor.exceptionhandler.exception.TripServiceException;
 import home.sweethome.tripadvisor.repository.TripRepository;
+import home.sweethome.tripadvisor.util.DistanceUtil;
 import home.sweethome.tripadvisor.util.LocationConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -45,9 +47,14 @@ public class TripService {
             throw new TripServiceException(HttpStatus.BAD_REQUEST, "Wrong start date");
 
         Trip trip = new Trip();
-        trip.setLocationList(getLocationList(tripRequestDTO, trip));
+
+        List<Location> locationList = getLocationList(tripRequestDTO, trip);
+        int distance = (int) DistanceUtil.distanceFromLocations(locationList);
+
+        trip.setLocationList(locationList);
         trip.setStartDate(Date.valueOf(localDate));
         trip.setDuration(tripRequestDTO.getDuration());
+        trip.setDistance(distance);
         trip.setUser(user);
         trip.setRouteName(routeName);
         tripRepository.save(trip);
@@ -64,6 +71,7 @@ public class TripService {
 
         return ResponseEntity.ok(TripResponseDTO.builder()
                 .duration(trip.getDuration())
+                .distance(trip.getDistance())
                 .startDate(trip.getStartDate().toString())
                 .routeName(trip.getRouteName())
                 .infoLocationFromTO(locationList
@@ -140,4 +148,19 @@ public class TripService {
         return tripRepository.findByRouteNameIgnoreCase(nameRoute).orElseThrow(() ->
                 new TripServiceException(HttpStatus.NOT_FOUND, "Trip not found!"));
     }
+
+    public ResponseEntity<Map<String, String>> deleteTrip(String route, Principal principal) {
+        Trip trip = getTrip(route);
+        User user = userService.getByUsername(principal.getName());
+
+        if (!user.equals(trip.getUser()))
+            throw new TripServiceException(HttpStatus.FORBIDDEN
+                    , "Wrong user, yoy don't have access to delete this trip!");
+
+        tripRepository.delete(trip);
+
+        return ResponseEntity.ok().body(Collections.singletonMap("status", "Trip with rout "
+                + route + " successfully deleted!"));
+    }
+
 }
