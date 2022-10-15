@@ -10,17 +10,21 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class TripRequestDTO {
 
-    @JsonProperty("from")
+    @JsonProperty(value = "from", required = true)
     @NotBlank
     private String fromAddress;
-    @JsonProperty("to")
+
+    @JsonProperty(value = "to", required = true)
     @NotBlank
     private String toAddress;
-    @JsonProperty("start date")
+
+    @JsonProperty(value = "start date", required = true)
     @NotBlank
     private String startDate;
+
     @Min(1)
     @Max(30)
+    @JsonProperty(value = "duration", required = true)
     private int duration;
 
 }

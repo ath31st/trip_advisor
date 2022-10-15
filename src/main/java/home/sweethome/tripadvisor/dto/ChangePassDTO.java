@@ -8,9 +8,10 @@ import lombok.Setter;
 @Setter
 public class ChangePassDTO {
 
-    @JsonProperty("old password")
+    @JsonProperty(value = "old password", required = true)
     String oldPass;
-    @JsonProperty("new password")
+
+    @JsonProperty(value = "new password", required = true)
     String newPass;
 
 }

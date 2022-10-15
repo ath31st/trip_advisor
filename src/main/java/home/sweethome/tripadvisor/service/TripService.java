@@ -113,6 +113,20 @@ public class TripService {
                 "status", "Duration successfully changed on " + newDuration + " days."));
     }
 
+    public ResponseEntity<Map<String, String>> deleteTrip(String route, Principal principal) {
+        Trip trip = getTrip(route);
+        User user = userService.getByUsername(principal.getName());
+
+        if (!user.equals(trip.getUser()))
+            throw new TripServiceException(HttpStatus.FORBIDDEN
+                    , "Wrong user, you don't have access to delete this trip!");
+
+        tripRepository.delete(trip);
+
+        return ResponseEntity.ok().body(Collections.singletonMap("status", "Trip with rout "
+                + route + " successfully deleted!"));
+    }
+
     private User getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userService.getByUsername((String) authentication.getPrincipal());
@@ -147,20 +161,6 @@ public class TripService {
     private Trip getTrip(String nameRoute) {
         return tripRepository.findByRouteNameIgnoreCase(nameRoute).orElseThrow(() ->
                 new TripServiceException(HttpStatus.NOT_FOUND, "Trip not found!"));
-    }
-
-    public ResponseEntity<Map<String, String>> deleteTrip(String route, Principal principal) {
-        Trip trip = getTrip(route);
-        User user = userService.getByUsername(principal.getName());
-
-        if (!user.equals(trip.getUser()))
-            throw new TripServiceException(HttpStatus.FORBIDDEN
-                    , "Wrong user, yoy don't have access to delete this trip!");
-
-        tripRepository.delete(trip);
-
-        return ResponseEntity.ok().body(Collections.singletonMap("status", "Trip with rout "
-                + route + " successfully deleted!"));
     }
 
 }

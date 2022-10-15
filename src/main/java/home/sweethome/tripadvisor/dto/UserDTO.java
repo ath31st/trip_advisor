@@ -13,10 +13,14 @@ import java.util.List;
 public class UserDTO {
 
     private String firstname;
+
     private String lastname;
+
     private String username;
+
     @JsonProperty("register date")
     private LocalDateTime registerDate;
+
     private List<Role> roles;
 
 }
