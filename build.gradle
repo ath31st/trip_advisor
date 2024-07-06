@@ -26,7 +26,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.auth0:java-jwt:4.4.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.0'
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.0'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 }
@@ -35,7 +35,7 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-task customFatJar(type: Jar) {
+tasks.register('customFatJar', Jar) {
     manifest {
         attributes 'Main-Class': 'home.sweethome.tripadvisor.TripAdvisor'
     }
